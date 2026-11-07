@@ -1,0 +1,102 @@
+
+<div id="app">
+  <h1>My Financial Records</h1>
+
+  <h2 id="formTitle">New Transaction</h2>
+
+  <label>Transaction Is</label>
+  <select id="transaction">
+    <option>Money Transfer</option>
+    <option>Money Received</option>
+    <option>Other</option>
+  </select>
+
+  <label>Date</label>
+  <input type="date" id="date">
+
+  <label>Sender Name</label>
+  <input type="text" id="sender" placeholder="Sender name">
+
+  <label>Receiver Name</label>
+  <input type="text" id="receiver" placeholder="Receiver name">
+
+  <label>Receiver Phone Number</label>
+  <input type="tel" id="phone" placeholder="Phone number">
+
+  <label>Currency</label>
+  <select id="currency">
+    <option value="CAD">CAD</option>
+    <option value="USD">USD</option>
+    <option value="EUR">EUR</option>
+    <option value="GBP">GBP</option>
+    <option value="ETB">ETB</option>
+    <option value="ERN">ERN</option>
+  </select>
+
+  <label>Amount Owed by Notified Person</label>
+  <input type="number" id="amount"
+         min="0" step="0.01" placeholder="0.00">
+
+  <label>Notified Person</label>
+  <input type="text" id="notified" placeholder="Person's name">
+
+  <label>Received Amount from Notified Person</label>
+  <input type="number" id="received"
+         min="0" step="0.01" value="0">
+
+  <button type="button" id="saveBtn">
+    Save Transaction
+  </button>
+
+  <button type="button" id="cancelEditBtn" hidden>
+    Cancel Edit
+  </button>
+
+  <hr>
+
+  <h2>Financial Report</h2>
+
+  <label>From Date</label>
+  <input type="date" id="fromDate">
+
+  <label>To Date</label>
+  <input type="date" id="toDate">
+
+  <label>Notified Person</label>
+  <select id="notifiedFilter">
+    <option value="">All Notified Persons</option>
+  </select>
+
+  <div id="reportResults"></div>
+
+  <hr>
+
+  <h2>Export & Backup</h2>
+
+  <button type="button" id="excelBtn">
+    Export to Excel
+  </button>
+
+  <button type="button" id="backupBtn">
+    Backup Records
+  </button>
+
+  <button type="button" id="restoreBtn">
+    Restore Records
+  </button>
+
+  <input
+    type="file"
+    id="restoreFile"
+    accept=".json,application/json"
+    style="display:none"
+  >
+
+  <hr>
+
+  <h2>Transaction Register</h2>
+
+  <p>Use Edit to correct a transaction or Delete to remove it.</p>
+
+  <div id="recordList"></div>
+</div>
