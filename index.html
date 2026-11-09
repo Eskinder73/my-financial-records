@@ -1,102 +1,893 @@
 
-<div id="app">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17365d">
+<title>My Financial Records</title>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 16px;
+  font-family: Arial, sans-serif;
+  background: #f3f5f8;
+  color: #222;
+}
+
+.container {
+  max-width: 1200px;
+  margin: auto;
+}
+
+header {
+  background: #17365d;
+  color: white;
+  padding: 22px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+}
+
+header h1 {
+  margin: 0 0 6px;
+  font-size: 25px;
+}
+
+header p {
+  margin: 0;
+  opacity: .9;
+}
+
+.panel {
+  background: white;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 7px rgba(0,0,0,.06);
+}
+
+h2 {
+  margin-top: 0;
+  color: #17365d;
+  font-size: 20px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+label {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+input, select {
+  width: 100%;
+  padding: 12px;
+  border: 1px solid #ccd2da;
+  border-radius: 6px;
+  font-size: 16px;
+  background: white;
+}
+
+input:focus, select:focus {
+  outline: 2px solid #9bbce4;
+  border-color: #2865a5;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 18px;
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  padding: 11px 16px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.primary {
+  background: #1769aa;
+  color: white;
+}
+
+.secondary {
+  background: #687789;
+  color: white;
+}
+
+.success {
+  background: #25834b;
+  color: white;
+}
+
+.danger {
+  background: #c83c3c;
+  color: white;
+}
+
+.editBtn {
+  background: #e7a62b;
+  color: #222;
+  margin-right: 4px;
+}
+
+.deleteBtn {
+  background: #c83c3c;
+  color: white;
+}
+
+.smallBtn {
+  padding: 7px 9px;
+  font-size: 12px;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  width: 100%;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.dataTable {
+  min-width: 1100px;
+}
+
+th, td {
+  border: 1px solid #e0e4e9;
+  padding: 10px;
+  text-align: left;
+  white-space: nowrap;
+}
+
+th {
+  background: #eaf0f7;
+  color: #17365d;
+}
+
+tr:nth-child(even) {
+  background: #fafbfd;
+}
+
+.report-filters {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.currencyTotal {
+  background: #eaf3ff;
+  padding: 12px;
+  border-radius: 6px;
+  margin: 8px 0;
+  font-weight: bold;
+}
+
+.muted {
+  color: #66717e;
+  font-size: 13px;
+}
+
+#cancelEditBtn {
+  display: none;
+}
+
+@media(max-width: 650px) {
+  body {
+    padding: 9px;
+  }
+
+  .form-grid, .report-filters {
+    grid-template-columns: 1fr;
+  }
+
+  .panel {
+    padding: 14px;
+  }
+
+  header h1 {
+    font-size: 21px;
+  }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
   <h1>My Financial Records</h1>
+  <p>Personal financial transaction register</p>
+</header>
 
-  <h2 id="formTitle">New Transaction</h2>
+<section class="panel">
+  <h2 id="formTitle">Add New Transaction</h2>
 
-  <label>Transaction Is</label>
-  <select id="transaction">
-    <option>Money Transfer</option>
-    <option>Money Received</option>
-    <option>Other</option>
-  </select>
+  <form id="transactionForm">
+    <div class="form-grid">
 
-  <label>Date</label>
-  <input type="date" id="date">
+      <div class="field">
+        <label for="transaction">Transaction Is</label>
+        <select id="transaction" required>
+          <option value="Money Transfer">Money Transfer</option>
+          <option value="Money Received">Money Received</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
 
-  <label>Sender Name</label>
-  <input type="text" id="sender" placeholder="Sender name">
+      <div class="field">
+        <label for="date">Date</label>
+        <input type="date" id="date" required>
+      </div>
 
-  <label>Receiver Name</label>
-  <input type="text" id="receiver" placeholder="Receiver name">
+      <div class="field">
+        <label for="sender">Sender Name</label>
+        <input type="text" id="sender" placeholder="Sender name">
+      </div>
 
-  <label>Receiver Phone Number</label>
-  <input type="tel" id="phone" placeholder="Phone number">
+      <div class="field">
+        <label for="receiver">Receiver Name</label>
+        <input type="text" id="receiver" placeholder="Receiver name">
+      </div>
 
-  <label>Currency</label>
-  <select id="currency">
-    <option value="CAD">CAD</option>
-    <option value="USD">USD</option>
-    <option value="EUR">EUR</option>
-    <option value="GBP">GBP</option>
-    <option value="ETB">ETB</option>
-    <option value="ERN">ERN</option>
-  </select>
+      <div class="field">
+        <label for="phone">Receiver Phone Number</label>
+        <input type="tel" id="phone" placeholder="Phone number">
+      </div>
 
-  <label>Amount Owed by Notified Person</label>
-  <input type="number" id="amount"
-         min="0" step="0.01" placeholder="0.00">
+      <div class="field">
+        <label for="currency">Currency</label>
+        <select id="currency" required>
+          <option value="CAD">CAD</option>
+          <option value="USD">USD</option>
+          <option value="EUR">EUR</option>
+          <option value="GBP">GBP</option>
+          <option value="ETB">ETB</option>
+          <option value="ERN">ERN</option>
+        </select>
+      </div>
 
-  <label>Notified Person</label>
-  <input type="text" id="notified" placeholder="Person's name">
+      <div class="field">
+        <label for="amount">Amount Owed by Notified Person</label>
+        <input type="number" id="amount" min="0" step="0.01" value="0">
+      </div>
 
-  <label>Received Amount from Notified Person</label>
-  <input type="number" id="received"
-         min="0" step="0.01" value="0">
+      <div class="field">
+        <label for="notified">Notified Person</label>
+        <input type="text" id="notified" placeholder="Person responsible for payment">
+      </div>
 
-  <button type="button" id="saveBtn">
-    Save Transaction
-  </button>
+      <div class="field">
+        <label for="received">Received Amount from Notified Person</label>
+        <input type="number" id="received" min="0" step="0.01" value="0">
+      </div>
 
-  <button type="button" id="cancelEditBtn" hidden>
-    Cancel Edit
-  </button>
+    </div>
 
-  <hr>
+    <div class="buttons">
+      <button type="submit" class="primary" id="saveBtn">
+        Save Transaction
+      </button>
 
+      <button type="button" class="secondary" id="cancelEditBtn">
+        Cancel Edit
+      </button>
+
+      <button type="reset" class="secondary" id="clearBtn">
+        Clear Form
+      </button>
+    </div>
+  </form>
+</section>
+
+<section class="panel">
+  <h2>Transaction Register</h2>
+  <p class="muted">Swipe horizontally to see all columns on your iPad.</p>
+  <div id="recordList" class="table-wrap"></div>
+</section>
+
+<section class="panel">
   <h2>Financial Report</h2>
 
-  <label>From Date</label>
-  <input type="date" id="fromDate">
+  <div class="report-filters">
+    <div class="field">
+      <label for="fromDate">From Date</label>
+      <input type="date" id="fromDate">
+    </div>
 
-  <label>To Date</label>
-  <input type="date" id="toDate">
+    <div class="field">
+      <label for="toDate">To Date</label>
+      <input type="date" id="toDate">
+    </div>
 
-  <label>Notified Person</label>
-  <select id="notifiedFilter">
-    <option value="">All Notified Persons</option>
-  </select>
+    <div class="field">
+      <label for="notifiedFilter">Notified Person</label>
+      <select id="notifiedFilter">
+        <option value="">All People</option>
+      </select>
+    </div>
+  </div>
 
   <div id="reportResults"></div>
+</section>
 
-  <hr>
+<section class="panel">
+  <h2>Data Backup and Export</h2>
 
-  <h2>Export & Backup</h2>
+  <p class="muted">
+    Export your transactions to Excel-compatible CSV or create a JSON
+    backup that can be restored later.
+  </p>
 
-  <button type="button" id="excelBtn">
-    Export to Excel
-  </button>
+  <div class="buttons">
+    <button class="success" id="excelBtn">Export to Excel (CSV)</button>
+    <button class="primary" id="backupBtn">Download JSON Backup</button>
+    <button class="secondary" id="restoreBtn">Restore JSON Backup</button>
+    <input type="file" id="restoreFile" accept=".json,application/json" hidden>
+  </div>
+</section>
 
-  <button type="button" id="backupBtn">
-    Backup Records
-  </button>
-
-  <button type="button" id="restoreBtn">
-    Restore Records
-  </button>
-
-  <input
-    type="file"
-    id="restoreFile"
-    accept=".json,application/json"
-    style="display:none"
-  >
-
-  <hr>
-
-  <h2>Transaction Register</h2>
-
-  <p>Use Edit to correct a transaction or Delete to remove it.</p>
-
-  <div id="recordList"></div>
 </div>
+
+<script>
+"use strict";
+
+const STORAGE_KEY = "financialRecords";
+
+const form = document.getElementById("transactionForm");
+const saveButton = document.getElementById("saveBtn");
+const cancelEditButton = document.getElementById("cancelEditBtn");
+const recordList = document.getElementById("recordList");
+const reportResults = document.getElementById("reportResults");
+
+const fromDate = document.getElementById("fromDate");
+const toDate = document.getElementById("toDate");
+const notifiedFilter = document.getElementById("notifiedFilter");
+
+let editingId = null;
+
+function getRecords() {
+  try {
+    const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
+    if (!Array.isArray(data)) return [];
+    return data.map(record => ({
+      ...record,
+      received: record.received ?? "0"
+    }));
+  } catch (error) {
+    console.error("Could not read saved records:", error);
+    return [];
+  }
+}
+
+function saveRecords(records) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
+}
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&": "&amp;",
+    "<": "&lt;",
+    ">": "&gt;",
+    '"': "&quot;",
+    "'": "&#039;"
+  })[char]);
+}
+
+function money(value, currency) {
+  const number = Number(value || 0);
+  return number.toLocaleString("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }) + " " + currency;
+}
+
+function amountValue(value) {
+  const number = Number(value);
+  return Number.isFinite(number) ? number : 0;
+}
+
+function personKey(record) {
+  return String(record.notified || "").trim().toLowerCase()
+    + "|" + String(record.currency || "").toUpperCase();
+}
+
+function chronologicalSort(records) {
+  return [...records].sort((a, b) => {
+    const dateCompare = String(a.date || "").localeCompare(String(b.date || ""));
+    if (dateCompare !== 0) return dateCompare;
+    return Number(a.id) - Number(b.id);
+  });
+}
+
+/* Calculate balances separately for each person and currency. */
+function calculateBalances(records) {
+  const balances = {};
+  const result = {};
+
+  chronologicalSort(records).forEach(record => {
+    const key = personKey(record);
+
+    if (!balances[key]) balances[key] = 0;
+
+    balances[key] += amountValue(record.amount);
+    balances[key] -= amountValue(record.received);
+
+    result[record.id] = balances[key];
+  });
+
+  return result;
+}
+
+function resetForm() {
+  form.reset();
+  editingId = null;
+
+  document.getElementById("formTitle").textContent = "Add New Transaction";
+  saveButton.textContent = "Save Transaction";
+  cancelEditButton.style.display = "none";
+
+  document.getElementById("amount").value = "0";
+  document.getElementById("received").value = "0";
+}
+
+function editTransaction(id) {
+  const records = getRecords();
+  const record = records.find(item => String(item.id) === String(id));
+
+  if (!record) return;
+
+  editingId = record.id;
+
+  document.getElementById("transaction").value = record.transaction || "Other";
+  document.getElementById("date").value = record.date || "";
+  document.getElementById("sender").value = record.sender || "";
+  document.getElementById("receiver").value = record.receiver || "";
+  document.getElementById("phone").value = record.phone || "";
+  document.getElementById("currency").value = record.currency || "CAD";
+  document.getElementById("amount").value = record.amount ?? "0";
+  document.getElementById("notified").value = record.notified || "";
+  document.getElementById("received").value = record.received ?? "0";
+
+  document.getElementById("formTitle").textContent = "Edit Transaction";
+  saveButton.textContent = "Update Transaction";
+  cancelEditButton.style.display = "inline-block";
+
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+function deleteTransaction(id) {
+  if (!confirm("Are you sure you want to delete this transaction?")) return;
+
+  const records = getRecords().filter(
+    record => String(record.id) !== String(id)
+  );
+
+  saveRecords(records);
+
+  if (String(editingId) === String(id)) resetForm();
+
+  refreshApp();
+}
+
+form.addEventListener("submit", function(event) {
+  event.preventDefault();
+
+  const amount = amountValue(document.getElementById("amount").value);
+  const received = amountValue(document.getElementById("received").value);
+  const notified = document.getElementById("notified").value.trim();
+
+  if (amount < 0 || received < 0) {
+    alert("Amounts cannot be negative.");
+    return;
+  }
+
+  if (amount === 0 && received === 0) {
+    alert("Enter an amount owed or an amount received.");
+    return;
+  }
+
+  if (!notified) {
+    alert("Please enter the Notified Person.");
+    return;
+  }
+
+  const records = getRecords();
+
+  const record = {
+    id: editingId || Date.now(),
+    transaction: document.getElementById("transaction").value,
+    date: document.getElementById("date").value,
+    sender: document.getElementById("sender").value.trim(),
+    receiver: document.getElementById("receiver").value.trim(),
+    phone: document.getElementById("phone").value.trim(),
+    currency: document.getElementById("currency").value,
+    amount: amount.toFixed(2),
+    notified: notified,
+    received: received.toFixed(2)
+  };
+
+  if (editingId) {
+    const index = records.findIndex(
+      item => String(item.id) === String(editingId)
+    );
+
+    if (index !== -1) {
+      records[index] = record;
+    } else {
+      records.push(record);
+    }
+  } else {
+    records.push(record);
+  }
+
+  saveRecords(records);
+  resetForm();
+  refreshApp();
+
+  alert("Transaction saved successfully.");
+});
+
+cancelEditButton.addEventListener("click", resetForm);
+
+document.getElementById("clearBtn").addEventListener("click", function() {
+  setTimeout(resetForm, 0);
+});
+
+/* Display the complete transaction register. */
+function displayRecords() {
+  const records = chronologicalSort(getRecords());
+  const balances = calculateBalances(records);
+
+  if (records.length === 0) {
+    recordList.innerHTML = "<p>No transactions recorded yet.</p>";
+    return;
+  }
+
+  let html = `
+    <table class="dataTable">
+      <thead>
+        <tr>
+          <th>Transaction</th>
+          <th>Date</th>
+          <th>Sender</th>
+          <th>Receiver</th>
+          <th>Phone</th>
+          <th>Currency</th>
+          <th>Amount Owed</th>
+          <th>Notified Person</th>
+          <th>Received</th>
+          <th>Balance</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  records.forEach(record => {
+    const balance = balances[record.id] ?? 0;
+
+    html += `
+      <tr>
+        <td>${escapeHTML(record.transaction)}</td>
+        <td>${escapeHTML(record.date)}</td>
+        <td>${escapeHTML(record.sender)}</td>
+        <td>${escapeHTML(record.receiver)}</td>
+        <td>${escapeHTML(record.phone)}</td>
+        <td>${escapeHTML(record.currency)}</td>
+        <td>${money(record.amount, record.currency)}</td>
+        <td>${escapeHTML(record.notified)}</td>
+        <td>${money(record.received, record.currency)}</td>
+        <td><strong>${money(balance, record.currency)}</strong></td>
+        <td>
+          <button class="editBtn smallBtn" data-edit="${escapeHTML(record.id)}">Edit</button>
+          <button class="deleteBtn smallBtn" data-delete="${escapeHTML(record.id)}">Delete</button>
+        </td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table>";
+  recordList.innerHTML = html;
+}
+
+recordList.addEventListener("click", function(event) {
+  const editButton = event.target.closest("[data-edit]");
+  const deleteButton = event.target.closest("[data-delete]");
+
+  if (editButton) editTransaction(editButton.dataset.edit);
+  if (deleteButton) deleteTransaction(deleteButton.dataset.delete);
+});
+
+/* Build the notified-person filter. */
+function updateNotifiedFilter() {
+  const previousValue = notifiedFilter.value;
+  const records = getRecords();
+
+  const people = [...new Set(
+    records.map(record => String(record.notified || "").trim())
+      .filter(Boolean)
+  )].sort((a, b) => a.localeCompare(b));
+
+  notifiedFilter.innerHTML = '<option value="">All People</option>';
+
+  people.forEach(person => {
+    const option = document.createElement("option");
+    option.value = person;
+    option.textContent = person;
+    notifiedFilter.appendChild(option);
+  });
+
+  if (people.includes(previousValue)) {
+    notifiedFilter.value = previousValue;
+  }
+}
+
+/* Report balances use the full transaction history, not only visible rows. */
+function displayReport() {
+  const allRecords = getRecords();
+  const balances = calculateBalances(allRecords);
+
+  const from = fromDate.value;
+  const to = toDate.value;
+  const selectedPerson = notifiedFilter.value;
+
+  if (from && to && from > to) {
+    reportResults.innerHTML = "<p>Please check the date range.</p>";
+    return;
+  }
+
+  const filtered = chronologicalSort(allRecords).filter(record => {
+    if (from && record.date < from) return false;
+    if (to && record.date > to) return false;
+    if (selectedPerson && record.notified !== selectedPerson) return false;
+    return true;
+  });
+
+  if (filtered.length === 0) {
+    reportResults.innerHTML = "<p>No transactions match these filters.</p>";
+    return;
+  }
+
+  let html = `
+    <div class="table-wrap">
+    <table class="dataTable">
+      <thead>
+        <tr>
+          <th>Date</th>
+          <th>Transaction</th>
+          <th>Sender</th>
+          <th>Receiver</th>
+          <th>Currency</th>
+          <th>Amount Owed</th>
+          <th>Notified Person</th>
+          <th>Received</th>
+          <th>Balance</th>
+        </tr>
+      </thead>
+      <tbody>
+  `;
+
+  filtered.forEach(record => {
+    html += `
+      <tr>
+        <td>${escapeHTML(record.date)}</td>
+        <td>${escapeHTML(record.transaction)}</td>
+        <td>${escapeHTML(record.sender)}</td>
+        <td>${escapeHTML(record.receiver)}</td>
+        <td>${escapeHTML(record.currency)}</td>
+        <td>${money(record.amount, record.currency)}</td>
+        <td>${escapeHTML(record.notified)}</td>
+        <td>${money(record.received, record.currency)}</td>
+        <td><strong>${money(balances[record.id] ?? 0, record.currency)}</strong></td>
+      </tr>
+    `;
+  });
+
+  html += "</tbody></table></div>";
+
+  /* Outstanding balances for each notified person and currency. */
+  const totals = {};
+
+  allRecords.forEach(record => {
+    if (selectedPerson && record.notified !== selectedPerson) return;
+
+    const key = personKey(record);
+
+    if (!totals[key]) {
+      totals[key] = {
+        person: record.notified,
+        currency: record.currency,
+        balance: 0
+      };
+    }
+
+    totals[key].balance += amountValue(record.amount);
+    totals[key].balance -= amountValue(record.received);
+  });
+
+  const outstanding = Object.values(totals)
+    .filter(item => item.balance > 0.000001);
+
+  html += "<h3>Outstanding Balances</h3>";
+
+  if (outstanding.length === 0) {
+    html += "<p>No outstanding balances.</p>";
+  } else {
+    outstanding.forEach(item => {
+      html += `
+        <div class="currencyTotal">
+          ${escapeHTML(item.person)}:
+          ${money(item.balance, item.currency)}
+        </div>
+      `;
+    });
+  }
+
+  reportResults.innerHTML = html;
+}
+
+fromDate.addEventListener("change", displayReport);
+toDate.addEventListener("change", displayReport);
+notifiedFilter.addEventListener("change", displayReport);
+
+/* Download CSV file that can be opened in Excel. */
+function csvSafe(value) {
+  let text = String(value ?? "");
+
+  if (/^[\s]*[=+\-@]/.test(text)) {
+    text = "'" + text;
+  }
+
+  return '"' + text.replace(/"/g, '""') + '"';
+}
+
+document.getElementById("excelBtn").addEventListener("click", function() {
+  const records = chronologicalSort(getRecords());
+  const balances = calculateBalances(records);
+
+  if (records.length === 0) {
+    alert("There are no records to export.");
+    return;
+  }
+
+  const rows = [[
+    "Transaction", "Date", "Sender", "Receiver", "Phone",
+    "Currency", "Amount Owed", "Notified Person",
+    "Received", "Balance"
+  ]];
+
+  records.forEach(record => {
+    rows.push([
+      record.transaction,
+      record.date,
+      record.sender,
+      record.receiver,
+      record.phone,
+      record.currency,
+      record.amount,
+      record.notified,
+      record.received,
+      (balances[record.id] ?? 0).toFixed(2)
+    ]);
+  });
+
+  const csv = rows.map(row => row.map(csvSafe).join(",")).join("\r\n");
+  downloadFile("\uFEFF" + csv, "Financial_Records.csv", "text/csv;charset=utf-8;");
+});
+
+/* Download a complete JSON backup. */
+document.getElementById("backupBtn").addEventListener("click", function() {
+  const records = getRecords();
+
+  downloadFile(
+    JSON.stringify(records, null, 2),
+    "Financial_Backup.json",
+    "application/json"
+  );
+});
+
+/* Restore transactions from a JSON backup. */
+document.getElementById("restoreBtn").addEventListener("click", function() {
+  document.getElementById("restoreFile").click();
+});
+
+document.getElementById("restoreFile").addEventListener("change", async function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  try {
+    const text = await file.text();
+    const imported = JSON.parse(text);
+
+    if (!Array.isArray(imported)) {
+      throw new Error("The backup must contain a list of records.");
+    }
+
+    const valid = imported.every(record =>
+      record &&
+      typeof record === "object" &&
+      record.date &&
+      record.currency &&
+      record.notified !== undefined &&
+      Number.isFinite(Number(record.amount ?? 0)) &&
+      Number.isFinite(Number(record.received ?? 0))
+    );
+
+    if (!valid) {
+      throw new Error("Some records are missing required information or contain invalid amounts.");
+    }
+
+    if (!confirm("Restoring this backup will replace the records currently stored in this app. Continue?")) {
+      return;
+    }
+
+    const restored = imported.map((record, index) => ({
+      ...record,
+      id: record.id ?? (Date.now() + index),
+      received: record.received ?? "0"
+    }));
+
+    saveRecords(restored);
+    resetForm();
+    refreshApp();
+
+    alert("Backup restored successfully.");
+  } catch (error) {
+    alert("Could not restore backup: " + error.message);
+  } finally {
+    event.target.value = "";
+  }
+});
+
+/* Shared file download helper. */
+function downloadFile(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+}
+
+function refreshApp() {
+  displayRecords();
+  updateNotifiedFilter();
+  displayReport();
+}
+
+/* Initial display. */
+refreshApp();
+resetForm();
+</script>
+
+</body>
+</html>
