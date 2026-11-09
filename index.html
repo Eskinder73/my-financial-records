@@ -1,4 +1,43 @@
-
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#17365d">
+<title>My Financial Records</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;padding:14px;font-family:Arial,sans-serif;background:#f3f5f8;color:#222}
+.container{max-width:1250px;margin:auto}
+header{background:#17365d;color:#fff;padding:22px;border-radius:10px;margin-bottom:18px}
+header h1{margin:0 0 6px;font-size:25px}
+header p{margin:0;opacity:.9}
+.panel{background:#fff;padding:18px;border-radius:10px;margin-bottom:18px;box-shadow:0 2px 7px rgba(0,0,0,.06)}
+h2{margin:0 0 15px;color:#17365d;font-size:20px}
+h3{color:#17365d}
+.menu{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:18px}
+.menu button{padding:17px;font-size:16px;background:#eaf0f7;color:#17365d;border:2px solid transparent}
+.menu button.active{background:#17365d;color:#fff;border-color:#17365d}
+.form-grid,.filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}
+.filters{grid-template-columns:repeat(4,minmax(0,1fr));margin-bottom:14px}
+.field{display:flex;flex-direction:column;gap:6px}
+label{font-weight:bold;font-size:14px}
+input,select{width:100%;padding:11px;border:1px solid #ccd2da;border-radius:6px;font-size:16px;background:#fff}
+input:focus,select:focus{outline:2px solid #9bbce4;border-color:#2865a5}
+.buttons{display:flex;flex-wrap:wrap;gap:9px;margin-top:17px}
+button{border:0;border-radius:6px;padding:10px 14px;font-size:14px;font-weight:bold;cursor:pointer}
+.primary{background:#1769aa;color:white}.secondary{background:#687789;color:white}
+.success{background:#25834b;color:white}.danger{background:#c83c3c;color:white}
+.editBtn{background:#e7a62b;color:#222;margin-right:4px}.deleteBtn{background:#c83c3c;color:#fff}
+.smallBtn{padding:7px 9px;font-size:12px}
+.table-wrap{overflow-x:auto;width:100%}
+table{width:100%;border-collapse:collapse;font-size:13px}
+.dataTable{min-width:1100px}
+th,td{border:1px solid #e0e4e9;padding:9px;text-align:left;white-space:nowrap}
+th{background:#eaf0f7;color:#17365d}
+tr:nth-child(even){background:#fafbfd}
+.muted{color:#66717e;font-size:13px}
+#cancelTransferEdit,#cancelPersonalEdit{display:none}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -890,5 +929,404 @@ refreshApp();
 resetForm();
 </script>
 
+</body>
+</html>
+
+.hidden{display:none!important}
+.summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin:14px 0}
+.metric{padding:14px;border-radius:8px;background:#eef3f8}
+.metric.income{background:#e9f5ed}.metric.expense{background:#fbeeee}
+.metric small{display:block;color:#586575;margin-bottom:6px}
+.metric strong{font-size:21px;overflow-wrap:anywhere}
+.chart-row{display:grid;grid-template-columns:130px 1fr 100px;gap:9px;align-items:center;margin:10px 0;font-size:13px}
+.bar-track{height:17px;background:#edf0f3;border-radius:20px;overflow:hidden}
+.bar-fill{height:100%;background:#397bb8;border-radius:20px}
+.balance-positive{color:#25834b}.balance-negative{color:#c83c3c}
+@media(max-width:700px){body{padding:8px}.panel{padding:13px}.form-grid,.filters{grid-template-columns:1fr 1fr}.summary{grid-template-columns:1fr}.chart-row{grid-template-columns:100px 1fr 85px}.menu button{font-size:14px;padding:14px}}
+@media(max-width:430px){.form-grid,.filters{grid-template-columns:1fr}.chart-row{grid-template-columns:85px 1fr 75px}}
+</style>
+</head>
+<body>
+<div class="container">
+<header>
+  <h1>My Financial Records</h1>
+  <p>Money transfers, personal income and expenses</p>
+</header>
+
+<nav class="menu" aria-label="Financial sections">
+  <button type="button" id="showTransfers" class="active">1. Money Transfer Records</button>
+  <button type="button" id="showPersonal">2. My Income &amp; Expenses</button>
+</nav>
+
+<!-- MONEY TRANSFER MODULE -->
+<main id="transferModule">
+  <section class="panel">
+    <h2 id="transferFormTitle">Add Money Transfer Transaction</h2>
+    <form id="transferForm">
+      <div class="form-grid">
+        <div class="field"><label for="transaction">Transaction Is</label>
+          <select id="transaction" required>
+            <option>Money Transfer</option><option>Money Received</option><option>Other</option>
+          </select>
+        </div>
+        <div class="field"><label for="date">Date</label><input type="date" id="date" required></div>
+        <div class="field"><label for="sender">Sender Name</label><input id="sender" type="text" placeholder="Sender name"></div>
+        <div class="field"><label for="receiver">Receiver Name</label><input id="receiver" type="text" placeholder="Receiver name"></div>
+        <div class="field"><label for="phone">Receiver Phone Number</label><input id="phone" type="tel" placeholder="Phone number"></div>
+        <div class="field"><label for="currency">Currency</label>
+          <select id="currency" required>
+            <option>CAD</option><option>USD</option><option>EUR</option><option>GBP</option><option>ETB</option><option>ERN</option>
+          </select>
+        </div>
+        <div class="field"><label for="amount">Amount Owed by Notified Person</label><input type="number" id="amount" min="0" step="0.01" value="0"></div>
+        <div class="field"><label for="notified">Notified Person</label><input id="notified" type="text" placeholder="Person responsible for payment"></div>
+        <div class="field"><label for="received">Received Amount from Notified Person</label><input type="number" id="received" min="0" step="0.01" value="0"></div>
+      </div>
+      <div class="buttons">
+        <button type="submit" class="primary" id="saveTransferBtn">Save Transaction</button>
+        <button type="button" class="secondary" id="cancelTransferEdit">Cancel Edit</button>
+        <button type="reset" class="secondary">Clear Form</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Money Transfer Register</h2>
+    <p class="muted">Swipe horizontally to see all columns on your iPad.</p>
+    <div id="transferList" class="table-wrap"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Money Transfer Report</h2>
+    <div class="filters">
+      <div class="field"><label for="tFrom">From Date</label><input type="date" id="tFrom"></div>
+      <div class="field"><label for="tTo">To Date</label><input type="date" id="tTo"></div>
+      <div class="field"><label for="tPerson">Notified Person</label><select id="tPerson"><option value="">All People</option></select></div>
+      <div class="field" style="justify-content:end"><label>&nbsp;</label><button type="button" class="primary" id="transferReportBtn">Generate Report</button></div>
+    </div>
+    <div id="transferReport"></div>
+  </section>
+  <section class="panel">
+    <h2>Money Transfer Backup &amp; Export</h2>
+    <div class="buttons">
+      <button type="button" class="success" id="transferCsvBtn">Export Transfer CSV</button>
+      <button type="button" class="primary" id="transferBackupBtn">Download Transfer JSON Backup</button>
+      <button type="button" class="secondary" id="transferRestoreBtn">Restore Transfer JSON Backup</button>
+      <input type="file" id="transferRestoreFile" accept=".json,application/json" hidden>
+    </div>
+  </section>
+</main>
+
+<!-- PERSONAL INCOME AND EXPENSE MODULE -->
+<main id="personalModule" class="hidden">
+  <section class="panel">
+    <h2 id="personalFormTitle">Add Income or Expense</h2>
+    <form id="personalForm">
+      <div class="form-grid">
+        <div class="field"><label for="pType">Transaction Type</label>
+          <select id="pType" required><option value="Expense">Expense</option><option value="Income">Income</option></select>
+        </div>
+        <div class="field"><label for="pDate">Date</label><input type="date" id="pDate" required></div>
+        <div class="field"><label for="pCategory">Category</label><select id="pCategory" required></select></div>
+        <div class="field"><label for="pDescription">Description</label><input id="pDescription" type="text" placeholder="Optional details"></div>
+        <div class="field"><label for="pAmount">Amount (CAD)</label><input type="number" id="pAmount" min="0.01" step="0.01" required placeholder="0.00"></div>
+      </div>
+      <p class="muted">This section records amounts in Canadian dollars (CAD) only.</p>
+      <div class="buttons">
+        <button type="submit" class="primary" id="savePersonalBtn">Save Transaction</button>
+        <button type="button" class="secondary" id="cancelPersonalEdit">Cancel Edit</button>
+        <button type="reset" class="secondary">Clear Form</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel">
+    <h2>Income &amp; Expenses Register</h2>
+    <p class="muted">All amounts in this section are CAD. Swipe horizontally to see all columns.</p>
+    <div id="personalList" class="table-wrap"></div>
+  </section>
+
+  <section class="panel">
+    <h2>Income &amp; Expenses Report</h2>
+    <div class="filters">
+      <div class="field"><label for="period">Report Period</label>
+        <select id="period">
+          <option value="month">Monthly</option><option value="week">Weekly</option>
+          <option value="year">Annual</option><option value="custom">Custom date range</option>
+          <option value="all">All records</option>
+        </select>
+      </div>
+      <div class="field"><label for="pFrom">From Date</label><input type="date" id="pFrom" disabled></div>
+      <div class="field"><label for="pTo">To Date</label><input type="date" id="pTo" disabled></div>
+      <div class="field" style="justify-content:end"><label>&nbsp;</label><button type="button" class="primary" id="generatePersonalReport">Generate Report</button></div>
+    </div>
+    <div id="personalReport"></div>
+    <div class="buttons">
+      <button type="button" class="success" id="showExpenseChart">Show Expense Chart</button>
+      <button type="button" class="secondary" id="hideExpenseChart">Hide Chart</button>
+      <button type="button" class="success" id="personalCsvBtn">Export Income &amp; Expense CSV</button>
+      <button type="button" class="primary" id="personalBackupBtn">Download Personal JSON Backup</button>
+      <button type="button" class="secondary" id="personalRestoreBtn">Restore Personal JSON Backup</button>
+      <input type="file" id="personalRestoreFile" accept=".json,application/json" hidden>
+    </div>
+    <div id="expenseChart" class="hidden"></div>
+  </section>
+</main>
+</div>
+
+<script>
+"use strict";
+
+/* Separate storage keeps the existing transfer records independent. */
+const TRANSFER_KEY = "financialRecords";
+const PERSONAL_KEY = "incomeExpenseRecords";
+const expenseCategories = ["Rent","Utilities","Internet","Phone","Groceries","Eating out","Insurance","Gas / Charging","Installment","Medical","Miscellaneous"];
+const incomeCategories = ["Employment Income","Uber Earnings","Business Income","Investment Income","Other Income"];
+let editingTransferId = null;
+let editingPersonalId = null;
+
+const $ = id => document.getElementById(id);
+const parseArray = key => {
+  try { const value = JSON.parse(localStorage.getItem(key) || "[]"); return Array.isArray(value) ? value : []; }
+  catch(e) { console.error(e); return []; }
+};
+const saveArray = (key, rows) => localStorage.setItem(key, JSON.stringify(rows));
+const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const num = value => Number.isFinite(Number(value)) ? Number(value) : 0;
+const cad = value => num(value).toLocaleString("en-CA",{style:"currency",currency:"CAD"});
+const sortDate = rows => [...rows].sort((a,b) => String(a.date||"").localeCompare(String(b.date||"")) || Number(a.id)-Number(b.id));
+function download(content,name,type) {
+  const blob = new Blob([content],{type});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a"); a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function csvCell(value) {
+  let s=String(value ?? "");
+  if (/^[\s]*[=+\-@]/.test(s)) s="'"+s;
+  return '"'+s.replace(/"/g,'""')+'"';
+}
+function exportCsv(rows, headers, filename) {
+  const csv=[headers,...rows].map(row=>row.map(csvCell).join(",")).join("\r\n");
+  download("\uFEFF"+csv,filename,"text/csv;charset=utf-8;");
+}
+
+/* Main section navigation */
+function showModule(which) {
+  const transfers=which==="transfers";
+  $("transferModule").classList.toggle("hidden",!transfers);
+  $("personalModule").classList.toggle("hidden",transfers);
+  $("showTransfers").classList.toggle("active",transfers);
+  $("showPersonal").classList.toggle("active",!transfers);
+}
+$("showTransfers").addEventListener("click",()=>showModule("transfers"));
+$("showPersonal").addEventListener("click",()=>{showModule("personal");refreshPersonal();});
+
+/* MONEY TRANSFER MODULE */
+function transferBalances(rows) {
+  const totals={}, byId={};
+  sortDate(rows).forEach(r=>{
+    const key=String(r.notified||"").trim().toLowerCase()+"|"+String(r.currency||"").toUpperCase();
+    totals[key]=(totals[key]||0)+num(r.amount)-num(r.received);
+    byId[r.id]=totals[key];
+  });
+  return byId;
+}
+function resetTransferForm() {
+  $("transferForm").reset(); editingTransferId=null;
+  $("transferFormTitle").textContent="Add Money Transfer Transaction";
+  $("saveTransferBtn").textContent="Save Transaction"; $("cancelTransferEdit").style.display="none";
+  $("amount").value="0"; $("received").value="0";
+}
+function renderTransfers() {
+  const rows=sortDate(parseArray(TRANSFER_KEY)), balances=transferBalances(rows);
+  if(!rows.length){$("transferList").innerHTML="<p>No money transfer transactions recorded yet.</p>";}
+  else {
+    let html='<table class="dataTable"><thead><tr><th>Transaction</th><th>Date</th><th>Sender</th><th>Receiver</th><th>Phone</th><th>Currency</th><th>Amount Owed</th><th>Notified Person</th><th>Received</th><th>Balance</th><th>Actions</th></tr></thead><tbody>';
+    rows.forEach(r=>{html+=`<tr><td>${esc(r.transaction)}</td><td>${esc(r.date)}</td><td>${esc(r.sender)}</td><td>${esc(r.receiver)}</td><td>${esc(r.phone)}</td><td>${esc(r.currency)}</td><td>${num(r.amount).toFixed(2)} ${esc(r.currency)}</td><td>${esc(r.notified)}</td><td>${num(r.received).toFixed(2)} ${esc(r.currency)}</td><td><b>${num(balances[r.id]).toFixed(2)} ${esc(r.currency)}</b></td><td><button class="editBtn smallBtn" data-tedit="${esc(r.id)}">Edit</button><button class="deleteBtn smallBtn" data-tdelete="${esc(r.id)}">Delete</button></td></tr>`;});
+    $("transferList").innerHTML=html+"</tbody></table>";
+  }
+  const old=$("tPerson").value;
+  const people=[...new Set(rows.map(r=>String(r.notified||"").trim()).filter(Boolean))].sort();
+  $("tPerson").innerHTML='<option value="">All People</option>'+people.map(p=>`<option value="${esc(p)}">${esc(p)}</option>`).join("");
+  if(people.includes(old)) $("tPerson").value=old;
+  renderTransferReport();
+}
+$("transferForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const amount=num($("amount").value), received=num($("received").value), notified=$("notified").value.trim();
+  if(amount<0||received<0||(!amount&&!received)||!notified){alert("Enter a notified person and a positive amount owed or received. Amounts cannot be negative.");return;}
+  const rows=parseArray(TRANSFER_KEY);
+  const record={id:editingTransferId||Date.now(),transaction:$("transaction").value,date:$("date").value,sender:$("sender").value.trim(),receiver:$("receiver").value.trim(),phone:$("phone").value.trim(),currency:$("currency").value,amount:amount.toFixed(2),notified,received:received.toFixed(2)};
+  if(editingTransferId){const i=rows.findIndex(r=>String(r.id)===String(editingTransferId));if(i>=0)rows[i]=record;else rows.push(record);}else rows.push(record);
+  saveArray(TRANSFER_KEY,rows);resetTransferForm();renderTransfers();alert("Money transfer transaction saved.");
+});
+$("cancelTransferEdit").addEventListener("click",resetTransferForm);
+$("transferList").addEventListener("click",e=>{
+  const edit=e.target.closest("[data-tedit]"), del=e.target.closest("[data-tdelete]");
+  if(edit){
+    const r=parseArray(TRANSFER_KEY).find(x=>String(x.id)===String(edit.dataset.tedit));if(!r)return;
+    editingTransferId=r.id;
+    $("transaction").value=r.transaction||"Other";$("date").value=r.date||"";$("sender").value=r.sender||"";$("receiver").value=r.receiver||"";$("phone").value=r.phone||"";$("currency").value=r.currency||"CAD";$("amount").value=r.amount??0;$("notified").value=r.notified||"";$("received").value=r.received??0;
+    $("transferFormTitle").textContent="Edit Money Transfer Transaction";$("saveTransferBtn").textContent="Update Transaction";$("cancelTransferEdit").style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"});
+  }
+  if(del&&confirm("Delete this money transfer transaction?")){
+    saveArray(TRANSFER_KEY,parseArray(TRANSFER_KEY).filter(x=>String(x.id)!==String(del.dataset.tdelete)));
+    if(String(editingTransferId)===String(del.dataset.tdelete))resetTransferForm();renderTransfers();
+  }
+});
+function renderTransferReport(){
+  const rows=sortDate(parseArray(TRANSFER_KEY)),from=$("tFrom").value,to=$("tTo").value,person=$("tPerson").value;
+  if(from&&to&&from>to){$("transferReport").innerHTML="<p>Check the date range.</p>";return;}
+  const filtered=rows.filter(r=>(!from||r.date>=from)&&(!to||r.date<=to)&&(!person||r.notified===person));
+  if(!filtered.length){$("transferReport").innerHTML="<p>No transactions match this report.</p>";return;}
+  const balances=transferBalances(rows);
+  let html='<div class="table-wrap"><table class="dataTable"><thead><tr><th>Date</th><th>Sender</th><th>Receiver</th><th>Currency</th><th>Owed</th><th>Notified Person</th><th>Received</th><th>Balance</th></tr></thead><tbody>';
+  filtered.forEach(r=>html+=`<tr><td>${esc(r.date)}</td><td>${esc(r.sender)}</td><td>${esc(r.receiver)}</td><td>${esc(r.currency)}</td><td>${num(r.amount).toFixed(2)}</td><td>${esc(r.notified)}</td><td>${num(r.received).toFixed(2)}</td><td>${num(balances[r.id]).toFixed(2)}</td></tr>`);
+  html+="</tbody></table></div>";
+  const totals={};rows.forEach(r=>{if(person&&r.notified!==person)return;const k=String(r.notified||"")+"|"+r.currency;totals[k]=(totals[k]||0)+num(r.amount)-num(r.received);});
+  const outstanding=Object.entries(totals).filter(([,v])=>v>0.000001);
+  html+="<h3>Outstanding Balances</h3>"+(outstanding.length?outstanding.map(([k,v])=>`<div class="metric">${esc(k.replace("|"," — "))}: <b>${v.toFixed(2)}</b></div>`).join(""):"<p>No outstanding balances.</p>");
+  $("transferReport").innerHTML=html;
+}
+["tFrom","tTo","tPerson"].forEach(id=>$(id).addEventListener("change",renderTransferReport));
+$("transferReportBtn").addEventListener("click",renderTransferReport);
+$("transferCsvBtn").addEventListener("click",()=>{
+  const rows=sortDate(parseArray(TRANSFER_KEY)),b=transferBalances(rows);
+  if(!rows.length){alert("No transfer records to export.");return;}
+  exportCsv(rows.map(r=>[r.transaction,r.date,r.sender,r.receiver,r.phone,r.currency,r.amount,r.notified,r.received,(b[r.id]||0).toFixed(2)]),["Transaction","Date","Sender","Receiver","Phone","Currency","Amount Owed","Notified Person","Received","Balance"],"Money_Transfer_Records.csv");
+});
+$("transferBackupBtn").addEventListener("click",()=>download(JSON.stringify(parseArray(TRANSFER_KEY),null,2),"Money_Transfer_Backup.json","application/json"));
+$("transferRestoreBtn").addEventListener("click",()=>$("transferRestoreFile").click());
+$("transferRestoreFile").addEventListener("change",async e=>{
+  const file=e.target.files[0];if(!file)return;
+  try{const data=JSON.parse(await file.text());if(!Array.isArray(data))throw Error("Backup must be a list of transactions.");if(!confirm("Replace all current money transfer records with this backup?"))return;
+    const valid=data.every(r=>r&&r.date&&r.currency&&r.notified!==undefined&&Number.isFinite(Number(r.amount??0))&&Number.isFinite(Number(r.received??0)));
+    if(!valid)throw Error("Backup contains invalid records.");
+    saveArray(TRANSFER_KEY,data.map((r,i)=>({...r,id:r.id??Date.now()+i,received:r.received??"0"})));resetTransferForm();renderTransfers();alert("Transfer backup restored.");
+  }catch(err){alert("Restore failed: "+err.message);}finally{e.target.value="";}
+});
+
+/* PERSONAL INCOME & EXPENSE MODULE */
+function updatePersonalCategories(){
+  const cats=$("pType").value==="Income"?incomeCategories:expenseCategories;
+  const previous=$("pCategory").value;
+  $("pCategory").innerHTML=cats.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+  if(cats.includes(previous))$("pCategory").value=previous;
+}
+$("pType").addEventListener("change",updatePersonalCategories);
+function resetPersonalForm(){
+  $("personalForm").reset();editingPersonalId=null;
+  $("personalFormTitle").textContent="Add Income or Expense";
+  $("savePersonalBtn").textContent="Save Transaction";$("cancelPersonalEdit").style.display="none";
+  updatePersonalCategories();
+}
+$("personalForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const amount=num($("pAmount").value);
+  if(!Number.isFinite(amount)||amount<=0){alert("Enter an amount greater than zero.");return;}
+  const rows=parseArray(PERSONAL_KEY);
+  const record={id:editingPersonalId||Date.now(),type:$("pType").value,date:$("pDate").value,category:$("pCategory").value,description:$("pDescription").value.trim(),amount:amount.toFixed(2),currency:"CAD"};
+  if(editingPersonalId){const i=rows.findIndex(r=>String(r.id)===String(editingPersonalId));if(i>=0)rows[i]=record;else rows.push(record);}else rows.push(record);
+  saveArray(PERSONAL_KEY,rows);resetPersonalForm();refreshPersonal();alert("Income or expense transaction saved.");
+});
+$("cancelPersonalEdit").addEventListener("click",resetPersonalForm);
+function renderPersonalList(){
+  const rows=sortDate(parseArray(PERSONAL_KEY));
+  if(!rows.length){$("personalList").innerHTML="<p>No income or expense transactions recorded yet.</p>";return;}
+  let html='<table class="dataTable"><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount (CAD)</th><th>Actions</th></tr></thead><tbody>';
+  rows.forEach(r=>html+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}</td><td>${esc(r.category)}</td><td>${esc(r.description)}</td><td>${cad(r.amount)}</td><td><button class="editBtn smallBtn" data-pedit="${esc(r.id)}">Edit</button><button class="deleteBtn smallBtn" data-pdelete="${esc(r.id)}">Delete</button></td></tr>`);
+  $("personalList").innerHTML=html+"</tbody></table>";
+}
+$("personalList").addEventListener("click",e=>{
+  const edit=e.target.closest("[data-pedit]"),del=e.target.closest("[data-pdelete]");
+  if(edit){
+    const r=parseArray(PERSONAL_KEY).find(x=>String(x.id)===String(edit.dataset.pedit));if(!r)return;
+    editingPersonalId=r.id;$("pType").value=r.type;$("pDate").value=r.date||"";$("pDescription").value=r.description||"";$("pAmount").value=r.amount;
+    updatePersonalCategories();$("pCategory").value=r.category;
+    $("personalFormTitle").textContent="Edit Income or Expense";$("savePersonalBtn").textContent="Update Transaction";$("cancelPersonalEdit").style.display="inline-block";window.scrollTo({top:0,behavior:"smooth"});
+  }
+  if(del&&confirm("Delete this income or expense transaction?")){
+    saveArray(PERSONAL_KEY,parseArray(PERSONAL_KEY).filter(x=>String(x.id)!==String(del.dataset.pdelete)));
+    if(String(editingPersonalId)===String(del.dataset.pdelete))resetPersonalForm();refreshPersonal();
+  }
+});
+function dateOnly(d){return new Date(d.getFullYear(),d.getMonth(),d.getDate());}
+function isoLocal(d){return [d.getFullYear(),String(d.getMonth()+1).padStart(2,"0"),String(d.getDate()).padStart(2,"0")].join("-");}
+function reportRange(){
+  const mode=$("period").value,now=new Date();let from=null,to=isoLocal(dateOnly(now));
+  if(mode==="week"){const d=dateOnly(now);const day=(d.getDay()+6)%7;d.setDate(d.getDate()-day);from=isoLocal(d);}
+  else if(mode==="month"){from=isoLocal(new Date(now.getFullYear(),now.getMonth(),1));}
+  else if(mode==="year"){from=isoLocal(new Date(now.getFullYear(),0,1));}
+  else if(mode==="custom"){from=$("pFrom").value||null;to=$("pTo").value||null;}
+  else {from=null;to=null;}
+  return {from,to};
+}
+function selectedPersonalRows(){
+  const range=reportRange();
+  return sortDate(parseArray(PERSONAL_KEY)).filter(r=>(!range.from||r.date>=range.from)&&(!range.to||r.date<=range.to));
+}
+function buildPersonalReport(){
+  const rows=selectedPersonalRows();
+  const income=rows.filter(r=>r.type==="Income").reduce((s,r)=>s+num(r.amount),0);
+  const expenses=rows.filter(r=>r.type==="Expense").reduce((s,r)=>s+num(r.amount),0);
+  const net=income-expenses;
+  let html=`<div class="summary">
+    <div class="metric income"><small>Total Income</small><strong>${cad(income)}</strong></div>
+    <div class="metric expense"><small>Total Expenses</small><strong>${cad(expenses)}</strong></div>
+    <div class="metric"><small>Net Income (Income − Expenses)</small><strong class="${net>=0?"balance-positive":"balance-negative"}">${cad(net)}</strong></div>
+  </div>`;
+  if(!rows.length){html+="<p>No transactions found for this reporting period.</p>";$("personalReport").innerHTML=html;$("expenseChart").classList.add("hidden");return;}
+  html+='<h3>Report Transactions</h3><div class="table-wrap"><table class="dataTable"><thead><tr><th>Date</th><th>Type</th><th>Category</th><th>Description</th><th>Amount (CAD)</th></tr></thead><tbody>';
+  rows.forEach(r=>html+=`<tr><td>${esc(r.date)}</td><td>${esc(r.type)}</td><td>${esc(r.category)}</td><td>${esc(r.description)}</td><td>${cad(r.amount)}</td></tr>`);
+  html+="</tbody></table></div>";
+  $("personalReport").innerHTML=html;
+  renderExpenseChart(rows);
+}
+function renderExpenseChart(rows){
+  const expenses=rows.filter(r=>r.type==="Expense");
+  const totals={};expenses.forEach(r=>totals[r.category]=(totals[r.category]||0)+num(r.amount));
+  const entries=Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  const max=Math.max(0,...entries.map(x=>x[1]));
+  if(!entries.length){$("expenseChart").innerHTML="<p>No expenses in this period to chart.</p>";return;}
+  $("expenseChart").innerHTML="<h3>Expenses by Category (CAD)</h3>"+entries.map(([category,value])=>`<div class="chart-row"><span>${esc(category)}</span><div class="bar-track"><div class="bar-fill" style="width:${max?value/max*100:0}%"></div></div><strong>${cad(value)}</strong></div>`).join("");
+}
+function refreshPersonal(){renderPersonalList();buildPersonalReport();}
+$("period").addEventListener("change",()=>{
+  const custom=$("period").value==="custom";
+  $("pFrom").disabled=!custom;$("pTo").disabled=!custom;
+  buildPersonalReport();
+});
+$("generatePersonalReport").addEventListener("click",()=>{
+  if($("period").value==="custom"&&$("pFrom").value&&$("pTo").value&&$("pFrom").value>$("pTo").value){alert("The From Date must not be later than the To Date.");return;}
+  buildPersonalReport();
+});
+$("pFrom").addEventListener("change",buildPersonalReport);$("pTo").addEventListener("change",buildPersonalReport);
+$("showExpenseChart").addEventListener("click",()=>{$("expenseChart").classList.remove("hidden");buildPersonalReport();});
+$("hideExpenseChart").addEventListener("click",()=>$("expenseChart").classList.add("hidden"));
+$("personalCsvBtn").addEventListener("click",()=>{
+  const rows=selectedPersonalRows();if(!rows.length){alert("No personal transactions to export for this period.");return;}
+  exportCsv(rows.map(r=>[r.date,r.type,r.category,r.description,r.amount,"CAD"]),["Date","Type","Category","Description","Amount","Currency"],"Income_Expenses_Report.csv");
+});
+$("personalBackupBtn").addEventListener("click",()=>download(JSON.stringify(parseArray(PERSONAL_KEY),null,2),"Income_Expenses_Backup.json","application/json"));
+$("personalRestoreBtn").addEventListener("click",()=>$("personalRestoreFile").click());
+$("personalRestoreFile").addEventListener("change",async e=>{
+  const file=e.target.files[0];if(!file)return;
+  try{const data=JSON.parse(await file.text());if(!Array.isArray(data))throw Error("Backup must be a list of transactions.");
+    const valid=data.every(r=>r&&r.date&&["Income","Expense"].includes(r.type)&&r.category&&Number.isFinite(Number(r.amount))&&Number(r.amount)>0);
+    if(!valid)throw Error("Backup contains invalid income or expense records.");
+    if(!confirm("Replace all current income and expense records with this backup?"))return;
+    saveArray(PERSONAL_KEY,data.map((r,i)=>({...r,id:r.id??Date.now()+i,currency:"CAD"})));refreshPersonal();alert("Personal finance backup restored.");
+  }catch(err){alert("Restore failed: "+err.message);}finally{e.target.value="";}
+});
+
+/* Initial page state */
+updatePersonalCategories();
+resetTransferForm();
+resetPersonalForm();
+renderTransfers();
+refreshPersonal();
+</script>
 </body>
 </html>
