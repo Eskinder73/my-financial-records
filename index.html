@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="theme-color" content="#17365d">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="My Records">
+<link rel="manifest" href="./manifest.json">
+<link rel="apple-touch-icon" href="./apple-touch-icon.png">
 <title>My Financial Records</title>
 <style>
 *{box-sizing:border-box}
@@ -172,6 +177,14 @@ $('personalRestoreFile').addEventListener('change',async e=>{const file=e.target
 
 // Initial page setup
 updatePersonalCategories();resetTransferForm();resetPersonalForm();renderTransfers();refreshPersonal();
+
+// Register the offline service worker when hosted on HTTPS (such as GitHub Pages).
+if ('serviceWorker' in navigator && location.protocol === 'https:') {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./service-worker.js')
+      .catch(error => console.error('Offline support could not be enabled:', error));
+  });
+}
 </script>
 </body>
 </html>
